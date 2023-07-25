@@ -102,6 +102,8 @@ services:
   ruoyi-server1:
     image: ruoyi/ruoyi-server:4.8.0
     container_name: ruoyi-server1
+    ports:
+      - "8080:8080"
     environment:
       # 时区上海
       TZ: Asia/Shanghai
