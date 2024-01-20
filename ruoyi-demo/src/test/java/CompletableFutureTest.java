@@ -85,7 +85,8 @@ public class CompletableFutureTest {
                 }
                 System.out.println(Thread.currentThread().getName() + ", run end ...");
             }).whenCompleteAsync((t, action) -> System.out.println(Thread.currentThread().getName() + ", whenComplete 1 执行完成！"))
-            .whenCompleteAsync((t, action) -> System.out.println(Thread.currentThread().getName() + ", whenComplete 2 执行完成！")).exceptionally(t -> {
+            .whenCompleteAsync((t, action) -> System.out.println(Thread.currentThread().getName() + ", whenComplete 2 执行完成！"))
+            .exceptionally(t -> {
                 System.out.println(Thread.currentThread().getName() + ", 执行失败！" + t.getMessage());
                 return null;
             });
