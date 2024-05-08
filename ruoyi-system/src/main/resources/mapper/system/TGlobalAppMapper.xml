@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TGlobalAppMapper">
+
+    <resultMap type="com.ruoyi.system.domain.TGlobalApp" id="TGlobalAppResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="description" column="description"/>
+        <result property="authType" column="auth_type"/>
+        <result property="svcAuthorization" column="svc_authorization"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createOn" column="create_on"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateOn" column="update_on"/>
+        <result property="extend1" column="extend1"/>
+        <result property="extend2" column="extend2"/>
+        <result property="extend3" column="extend3"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+</mapper>
