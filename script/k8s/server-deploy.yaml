@@ -18,6 +18,9 @@ spec:
           image: ruoyi/ruoyi-server:4.8.2
           ports:
             - containerPort: 8080
+          env:
+            - name: TZ
+              value: Asia/Shanghai
 ---
 kind: Service
 apiVersion: v1

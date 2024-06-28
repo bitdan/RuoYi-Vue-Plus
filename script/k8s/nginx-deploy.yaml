@@ -14,7 +14,6 @@ spec:
   selector:
     app: nginx-pod
   type: NodePort
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -40,12 +39,23 @@ spec:
           name: nginx
           ports:
             - containerPort: 80
-          resources: {}
+          resources: { }
           volumeMounts:
             - name: nginx-config
-              mountPath: "/etc/nginx/conf.d/"
-              readOnly: true
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: html-files
+              mountPath: "/usr/share/nginx/html/ruoyi-vue-plus"
+          env:
+            - name: TZ
+              value: Asia/Shanghai
       volumes:
         - name: nginx-config
           configMap:
             name: nginx-configmap
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+        - name: html-files
+          hostPath:
+            path: "/root/nginx/html/ruoyi-vue-plus"
