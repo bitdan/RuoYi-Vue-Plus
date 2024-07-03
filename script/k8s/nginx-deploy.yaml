@@ -58,7 +58,7 @@ spec:
                 path: nginx.conf
         - name: html-files
           hostPath:
-            path: "/root/nginx/html/ruoyi-vue-plus"
+            path: "/k8s/nginx/html/ruoyi-vue-plus"
 ---
 apiVersion: v1
 kind: ConfigMap
