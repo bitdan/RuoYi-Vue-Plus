@@ -12,8 +12,9 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: standard
-  hostPath:
-    path: "/k8s/mysql8"
+  nfs:
+    path: /nfs/mysql
+    server: 139.159.140.xxx
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -68,6 +69,8 @@ spec:
       labels:
         app: mysql
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
       containers:
         - name: mysql
           image: mysql:8.2.0

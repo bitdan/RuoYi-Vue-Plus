@@ -11,8 +11,9 @@ spec:
     storage: 5Gi
   accessModes:
     - ReadWriteOnce
-  hostPath:
-    path: /k8s/redis
+  nfs:
+    path: /nfs/redis
+    server: 139.159.140.xxx
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -62,6 +63,8 @@ spec:
       labels:
         app: redis
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
       containers:
         - name: redis
           image: redis:6.2.7

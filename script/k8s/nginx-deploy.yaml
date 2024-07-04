@@ -1,4 +1,31 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-pv
+  namespace: ruoyi
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /nfs/nginx/html/ruoyi-vue-plus
+    server: 139.159.140.xxx
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-pvc
+  namespace: ruoyi
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+
+apiVersion: v1
 kind: Service
 metadata:
   labels:
@@ -57,8 +84,8 @@ spec:
               - key: nginx.conf
                 path: nginx.conf
         - name: html-files
-          hostPath:
-            path: "/k8s/nginx/html/ruoyi-vue-plus"
+          persistentVolumeClaim:
+            claimName: nginx-pvc
 ---
 apiVersion: v1
 kind: ConfigMap
