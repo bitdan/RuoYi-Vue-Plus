@@ -3,116 +3,99 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: minio-pv
-  namespace: ruoyi
 spec:
   capacity:
     storage: 10Gi
   accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: /docker/minio/data
-
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nfs/minio
+    server: 139.159.140.xxx
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: minio-pvc
-  namespace: ruoyi
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 10Gi
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: minio-config
-  namespace: ruoyi
-data:
-  MINIO_COMPRESS: "off"
-  MINIO_COMPRESS_EXTENSIONS: ""
-  MINIO_COMPRESS_MIME_TYPES: ""
 
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: minio-secret
-  namespace: ruoyi
 type: Opaque
-data:
-  MINIO_ROOT_USER: YWRtaW4=  # admin base64 编码
-  MINIO_ROOT_PASSWORD: ZHVkdTAuMCEtPQ==  # dudu0.0!@-= base64 编码
+stringData:
+  root-user: minio
+  root-password: dudu0.0@
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: minio
-  namespace: ruoyi
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: minio
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: minio
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
       containers:
         - name: minio
-          image: minio/minio:RELEASE.2023-03-24T21-41-23Z
+          image: minio/minio:latest
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":9001"
           ports:
             - containerPort: 9000
             - containerPort: 9001
-          envFrom:
-            - configMapRef:
-                name: minio-config
-            - secretRef:
-                name: minio-secret
-          args:
-            - "server"
-            - "--address"
-            - ":9000"
-            - "--console-address"
-            - ":9001"
-            - "/data"
-          volumeMounts:
-            - name: minio-data
-              mountPath: /data
-            - name: minio-config
-              mountPath: /root/.minio/
           env:
-            - name: TZ
-              value: Asia/Shanghai
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: root-user
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: root-password
+          volumeMounts:
+            - name: storage
+              mountPath: "/data"
       volumes:
-        - name: minio-data
+        - name: storage
           persistentVolumeClaim:
             claimName: minio-pvc
-        - name: minio-config
-          hostPath:
-            path: /docker/minio/config
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: minio-service
-  namespace: ruoyi
+  name: minio
 spec:
-  selector:
-    app: minio
+  type: NodePort
   ports:
-    - protocol: TCP
+    - name: api
       port: 9000
       targetPort: 9000
-      nodePort: 30000
-    - protocol: TCP
+      nodePort: 30900
+    - name: console
       port: 9001
       targetPort: 9001
-      nodePort: 30001
-  type: NodePort
+      nodePort: 30901
+  selector:
+    app: minio
