@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: ruoyi-server
-          image: ruoyi/ruoyi-server:4.8.2
+          image: biasoo/ruoyi-server-k8s:4.8.2
           ports:
             - containerPort: 8080
           env:
