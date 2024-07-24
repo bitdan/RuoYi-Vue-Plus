@@ -52,7 +52,7 @@ metadata:
   namespace: ruoyi
 type: Opaque
 stringData:
-  root-password: dudu0.0
+  root-password: dudu0.0@
 ---
 apiVersion: apps/v1
 kind: Deployment

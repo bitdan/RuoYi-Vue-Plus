@@ -46,7 +46,7 @@ metadata:
   namespace: ruoyi
 type: Opaque
 stringData:
-  password: dudu0.0
+  password: dudu0.0@
 ---
 apiVersion: apps/v1
 kind: Deployment
