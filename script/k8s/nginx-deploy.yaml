@@ -9,8 +9,8 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 139.159.140.xxx
     path: /nfs/nginx/html/ruoyi-vue-plus
+    server: 139.159.140.xxx
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
