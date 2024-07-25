@@ -22,3 +22,4 @@ services:
       - /docker/nginx/log:/var/log/nginx
     privileged: true
     network_mode: "host"
+    restart: always
