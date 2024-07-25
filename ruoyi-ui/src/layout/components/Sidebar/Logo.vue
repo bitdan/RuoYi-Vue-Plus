@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: '嘟嘟',
+      title: 'lux',
       logo: logoImg
     }
   }
