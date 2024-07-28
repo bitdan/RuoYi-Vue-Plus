@@ -2,6 +2,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -57,6 +58,22 @@ public class Concurrent {
 
         executor.shutdown();
     }
+
+    private ArrayList<Integer> list = new ArrayList<>();
+
+    public  void add(int value){
+       synchronized (Concurrent.class){
+           list.add(value);
+       }
+    }
+
+    public  int get(int index){
+        synchronized (Concurrent.class){
+            return  list.get(index);
+        }
+    }
+
+
 
     static class Seq implements Runnable {
         private final int index;
@@ -154,7 +171,5 @@ public class Concurrent {
             }
         }
     }
-
-
 
 }
