@@ -15,7 +15,7 @@ public class CompletableFutureTest {
         public Thread newThread(Runnable r) {
             Thread t = new Thread(r);
             String threadName = CompletableFutureTest.class.getSimpleName() + count.addAndGet(1);
-            System.out.println(threadName);
+            log.info(threadName);
             t.setName(threadName);
             return t;
         }
@@ -28,7 +28,7 @@ public class CompletableFutureTest {
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
             // 记录异常
             // 报警处理等
-            System.out.println("error.............");
+            log.info("error.............");
         }
     }
 
@@ -49,7 +49,7 @@ public class CompletableFutureTest {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
             }
-            System.out.println("run end ...");
+            log.info("run end ...");
         }, pool).thenRunAsync(() -> {
             log.info("whoe is : {}", "whoe");
         }, pool);
@@ -65,12 +65,12 @@ public class CompletableFutureTest {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
             }
-            System.out.println("run end ...");
+            log.info("run end ...");
             return System.currentTimeMillis();
         });
 
         long time = future.get();
-        System.out.println("time = " + time);
+        log.info("time = {}", time);
     }
 
     @Test
@@ -83,11 +83,11 @@ public class CompletableFutureTest {
                 if (new Random().nextInt() % 2 >= 0) {
                     int i = 12 / 2;
                 }
-                System.out.println(Thread.currentThread().getName() + ", run end ...");
-            }).whenCompleteAsync((t, action) -> System.out.println(Thread.currentThread().getName() + ", whenComplete 1 执行完成！"))
-            .whenCompleteAsync((t, action) -> System.out.println(Thread.currentThread().getName() + ", whenComplete 2 执行完成！"))
+                log.info("{}, run end ...", Thread.currentThread().getName());
+            }).whenCompleteAsync((t, action) -> log.info(Thread.currentThread().getName() + ", whenComplete 1 执行完成！"))
+            .whenCompleteAsync((t, action) -> log.info(Thread.currentThread().getName() + ", whenComplete 2 执行完成！"))
             .exceptionally(t -> {
-                System.out.println(Thread.currentThread().getName() + ", 执行失败！" + t.getMessage());
+                log.info("{}, 执行失败！{}", Thread.currentThread().getName(), t.getMessage());
                 return null;
             });
         future.get();
@@ -98,22 +98,22 @@ public class CompletableFutureTest {
     public void testThenApply() throws Exception {
         CompletableFuture<Long> future = CompletableFuture.supplyAsync(() -> {
             long result = new Random().nextInt(100);
-            System.out.println(Thread.currentThread().getName() + ", result1=" + result);
+            log.info("{}, result1={}", Thread.currentThread().getName(), result);
             return result;
         }).thenApplyAsync(t -> {
             long result = t * 5;
-            System.out.println(Thread.currentThread().getName() + ", result2=" + result);
+            log.info("{}, result2={}", Thread.currentThread().getName(), result);
             return result;
         });
 
         long result = future.get();
-        System.out.println(Thread.currentThread().getName() + ", result=" + result);
+        log.info(Thread.currentThread().getName() + ", result=" + result);
     }
 
     @Test
     void testHandle() throws Exception {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
-            System.out.println(Thread.currentThread().getName() + ", in async task");
+            log.info(Thread.currentThread().getName() + ", in async task");
             int i = 10 / 0;
             return new Random().nextInt(10);
         }).handle((param, throwable) -> {
@@ -121,32 +121,32 @@ public class CompletableFutureTest {
             if (throwable == null) {
                 result = param * 2;
             } else {
-                System.out.println(Thread.currentThread().getName() + "," + throwable.getMessage());
+                log.info(Thread.currentThread().getName() + "," + throwable.getMessage());
             }
             return result;
         });
-        System.out.println(Thread.currentThread().getName() + "," + future.get());
+        log.info("{},{}", Thread.currentThread().getName(), future.get());
     }
 
     @Test
     public void testThenAccept() throws Exception {
         CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> {
-            System.out.println(Thread.currentThread().getName() + ", in async task");
+            log.info(Thread.currentThread().getName() + ", in async task");
             return new Random().nextInt(10);
         }).thenAccept(integer -> {
-            System.out.println(Thread.currentThread().getName() + ", integer=" + integer);
+            log.info("{}, integer={}", Thread.currentThread().getName(), integer);
         });
         future.get();
-        System.out.println(Thread.currentThread().getName() + ", caller");
+        log.info("{}, caller", Thread.currentThread().getName());
     }
 
     @Test
     void testThenRun() throws Exception {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
-            System.out.println(Thread.currentThread().getName() + ", in async task");
+            log.info(Thread.currentThread().getName() + ", in async task");
             return new Random().nextInt(10);
         }).thenApplyAsync((res) -> {
-            System.out.println(Thread.currentThread().getName() + ", in thenRun " + res);
+            log.info("{}, in thenRun {}", Thread.currentThread().getName(), res);
             return res;
         });
         Integer i = future.get();
@@ -156,21 +156,17 @@ public class CompletableFutureTest {
     @Test
     void thenCombine() throws Exception {
         CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
-            System.out.println(Thread.currentThread().getName() + ", in async task 1");
+            log.info("{}, in async task 1", Thread.currentThread().getName());
             return "hello";
         });
         CompletableFuture<String> future2 = CompletableFuture.supplyAsync(() -> {
-            System.out.println(Thread.currentThread().getName() + ", in async task 2");
+            log.info("{}, in async task 2", Thread.currentThread().getName());
             return "world";
         });
         CompletableFuture<String> result = future1.thenCombineAsync(future2, (t, u) -> {
-            System.out.println(Thread.currentThread().getName() + ", in combine task");
+            log.info("{}, in combine task", Thread.currentThread().getName());
             return t + " " + u;
         });
-        log.info(Thread.currentThread().getName() + "," + result.get());
+        log.info("{},{}", Thread.currentThread().getName(), result.get());
     }
-
-
-
-
 }

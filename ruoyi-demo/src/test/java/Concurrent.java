@@ -24,8 +24,24 @@ public class Concurrent {
     private static final AtomicInteger currentNum = new AtomicInteger(1);
     private static final String[] LETTERS = {"A", "B", "C"};
 
+    private static volatile Concurrent singleton;
+
+    private Concurrent() {
+    }
+
+    public static Concurrent getSingleton() {
+        if (singleton == null) {
+            synchronized (Concurrent.class) {
+                if (singleton == null) {
+                    singleton = new Concurrent();
+                }
+            }
+        }
+        return singleton;
+    }
+
     @Test
-    public void synchronizedtest() {
+    public void synchronizedTest() {
         Thread thread = new Thread(new Seq(0));
         Thread thread1 = new Thread(new Seq(1));
         Thread thread2 = new Thread(new Seq(2));
@@ -35,7 +51,7 @@ public class Concurrent {
     }
 
     @Test
-    public void synchronizedtest2() {
+    public void synchronizedTest2() {
         Thread thread = new Thread(new Seq2(0));
         Thread thread1 = new Thread(new Seq2(1));
         thread.start();
@@ -43,7 +59,7 @@ public class Concurrent {
     }
 
     @Test
-    public void synchronizedtestABC() {
+    public void synchronizedTestABC() {
         Thread thread = new Thread(new SeqABC(0));
         Thread thread1 = new Thread(new SeqABC(1));
         Thread thread2 = new Thread(new SeqABC(2));
@@ -53,7 +69,7 @@ public class Concurrent {
     }
 
     @Test
-    public void reentrantLocktest() {
+    public void reentrantLockTest() {
         final ArrayList<Condition> conditions = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             Condition condition = reentrantLock.newCondition();
@@ -64,7 +80,7 @@ public class Concurrent {
     }
 
     @Test
-    public void completableFuturetest() {
+    public void completableFutureTest() {
         ExecutorService executor = Executors.newFixedThreadPool(3);
 
         CompletableFuture<Void> task1 = CompletableFuture.runAsync(new Printer(0), executor);
@@ -201,7 +217,7 @@ public class Concurrent {
                         signalNext();
                         return;
                     }
-                    log.info(this.getName() + "" + count);
+                    log.info("{}{}", this.getName(), count);
                     count++;
                     signalNext();
                 } catch (InterruptedException e) {
@@ -229,7 +245,7 @@ public class Concurrent {
                         break;
                     }
                     if (currentNum.get() % 3 == threadId) {
-                        log.info(Thread.currentThread().getName() + ": " + currentNum.getAndIncrement());
+                        log.info("{}: {}", Thread.currentThread().getName(), currentNum.getAndIncrement());
                         lock.notifyAll();
                     } else {
                         try {
