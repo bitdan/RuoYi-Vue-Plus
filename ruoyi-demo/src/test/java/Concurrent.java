@@ -2,7 +2,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -23,13 +22,31 @@ public class Concurrent {
     public static final int max = 100;
     public static final ReentrantLock reentrantLock = new ReentrantLock();
     private static final AtomicInteger currentNum = new AtomicInteger(1);
-
+    private static final String[] LETTERS = {"A", "B", "C"};
 
     @Test
     public void synchronizedtest() {
         Thread thread = new Thread(new Seq(0));
         Thread thread1 = new Thread(new Seq(1));
         Thread thread2 = new Thread(new Seq(2));
+        thread.start();
+        thread1.start();
+        thread2.start();
+    }
+
+    @Test
+    public void synchronizedtest2() {
+        Thread thread = new Thread(new Seq2(0));
+        Thread thread1 = new Thread(new Seq2(1));
+        thread.start();
+        thread1.start();
+    }
+
+    @Test
+    public void synchronizedtestABC() {
+        Thread thread = new Thread(new SeqABC(0));
+        Thread thread1 = new Thread(new SeqABC(1));
+        Thread thread2 = new Thread(new SeqABC(2));
         thread.start();
         thread1.start();
         thread2.start();
@@ -61,19 +78,17 @@ public class Concurrent {
 
     private ArrayList<Integer> list = new ArrayList<>();
 
-    public  void add(int value){
-       synchronized (Concurrent.class){
-           list.add(value);
-       }
-    }
-
-    public  int get(int index){
-        synchronized (Concurrent.class){
-            return  list.get(index);
+    public void add(int value) {
+        synchronized (Concurrent.class) {
+            list.add(value);
         }
     }
 
-
+    public int get(int index) {
+        synchronized (Concurrent.class) {
+            return list.get(index);
+        }
+    }
 
     static class Seq implements Runnable {
         private final int index;
@@ -92,6 +107,62 @@ public class Concurrent {
                         }
                         if (count <= max) {
                             log.info("thread-{}-count-{}", index, count);
+                        }
+                        count++;
+                        Lock.notifyAll();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    static class Seq2 implements Runnable {
+        private final int index;
+
+        public Seq2(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public void run() {
+            while (count < max) {
+                synchronized (Lock) {
+                    try {
+                        while (count % 2 != index) {
+                            Lock.wait();
+                        }
+                        if (count <= max) {
+                            log.info("thread-{}-count-{}", index, count);
+                        }
+                        count++;
+                        Lock.notifyAll();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    static class SeqABC implements Runnable {
+        private final int index;
+
+        public SeqABC(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public void run() {
+            while (count < max) {
+                synchronized (Lock) {
+                    try {
+                        while (count % 3 != index) {
+                            Lock.wait();
+                        }
+                        if (count <= max) {
+                            log.info("thread-{}-count-{}", index, LETTERS[index]);
                         }
                         count++;
                         Lock.notifyAll();
