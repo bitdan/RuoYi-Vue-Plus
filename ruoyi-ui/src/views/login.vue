@@ -15,12 +15,18 @@
       <el-form-item prop="password">
         <el-input
           v-model="loginForm.password"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           auto-complete="off"
           placeholder="密码"
           @keyup.enter.native="handleLogin"
         >
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
+          <svg-icon
+            slot="suffix"
+            :icon-class="showPassword ? 'eye-open' : 'eye'"
+            @click="togglePasswordVisibility"
+            class="password-toggle-icon"
+          />
         </el-input>
       </el-form-item>
       <el-form-item prop="code" v-if="captchaEnabled">
@@ -70,6 +76,7 @@ export default {
   name: "Login",
   data() {
     return {
+      showPassword: false,
       codeUrl: "",
       loginForm: {
         username: "admin",
@@ -108,6 +115,9 @@ export default {
     this.getCookie();
   },
   methods: {
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
     getCode() {
       getCodeImg().then(res => {
         this.captchaEnabled = res.data.captchaEnabled === undefined ? true : res.data.captchaEnabled;
@@ -156,6 +166,9 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+.password-toggle-icon {
+  cursor: pointer;
+}
 .login {
   display: flex;
   justify-content: center;
