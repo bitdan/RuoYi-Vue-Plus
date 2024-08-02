@@ -23,7 +23,7 @@ public class Concurrent {
     public static final ReentrantLock reentrantLock = new ReentrantLock();
     private static final AtomicInteger currentNum = new AtomicInteger(1);
     private static final String[] LETTERS = {"A", "B", "C"};
-
+    private static Boolean isOdd = true;
     private static volatile Concurrent singleton;
 
     private Concurrent() {
@@ -69,6 +69,23 @@ public class Concurrent {
     }
 
     @Test
+    public void synchronizedNumberLetter() {
+        Thread thread = new Thread(new NumberPrint());
+        Thread thread1 = new Thread(new LetterPrint());
+        thread.start();
+        thread1.start();
+    }
+
+    @Test
+    public void synchronizedOddEven() {
+        Thread thread = new Thread(new OddPrint());
+        Thread thread1 = new Thread(new EvenPrint());
+        thread.start();
+        thread1.start();
+    }
+
+
+    @Test
     public void reentrantLockTest() {
         final ArrayList<Condition> conditions = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
@@ -103,6 +120,95 @@ public class Concurrent {
     public int get(int index) {
         synchronized (Concurrent.class) {
             return list.get(index);
+        }
+    }
+
+    static class NumberPrint implements Runnable {
+        @Override
+        public void run() {
+            synchronized (Lock) {
+                for (int i = 1; i <= 3; i++) {
+                    try {
+                        while (!isOdd) {
+                            Lock.wait();
+                        }
+                        log.info(String.valueOf(i));
+                        isOdd = false;
+                        Lock.notifyAll();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    static class LetterPrint implements Runnable {
+        @Override
+        public void run() {
+
+            synchronized (Lock) {
+                for (char i = 'A'; i <= 'C'; i++) {
+                    try {
+                        while (isOdd) {
+                            Lock.wait();
+                        }
+                        log.info(String.valueOf(i));
+                        isOdd = true;
+                        Lock.notify();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    static class OddPrint implements Runnable {
+        @Override
+        public void run() {
+            synchronized (Lock) {
+                while (count < max) {
+                    if (count % 2 == 0) {
+                        try {
+                            Lock.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        log.info("thread odd --{}", count);
+                        count++;
+                        Lock.notifyAll();
+                    }
+                }
+            }
+        }
+    }
+
+    static class EvenPrint implements Runnable {
+        @Override
+        public void run() {
+            synchronized (Lock) {
+                while (count < max) {
+                    if (count % 2 == 1) {
+                        try {
+                            Lock.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    } else {
+                        log.info("thread even --{}", count);
+                        count++;
+                        Lock.notifyAll();
+                    }
+                }
+
+            }
         }
     }
 
