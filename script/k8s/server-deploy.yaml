@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: ruoyi-server
   namespace: ruoyi
+  annotations:
+    kubernetes.io/change-cause: "后端访问提示修改"
 spec:
   selector:
     matchLabels:
@@ -15,7 +17,7 @@ spec:
     spec:
       containers:
         - name: ruoyi-server
-          image: biasoo/ruoyi-server-k8s:4.8.2
+          image: biasoo/ruoyi-server-k8s:4.8.5
           ports:
             - containerPort: 8080
           env:
