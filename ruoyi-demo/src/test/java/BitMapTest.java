@@ -3,7 +3,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @version 1.0
@@ -129,7 +128,7 @@ public class BitMapTest {
 
     @Test
     public void test8() {
-        HashMap map = new HashMap<Integer,Integer>();
+        MyHashMap map = new MyHashMap<Integer,Integer>();
         map.put(1,1);
         map.put(2,2);
         map.put(1,40);
@@ -141,5 +140,112 @@ public class BitMapTest {
         log.info(set.toString());
         Set set1 = map.entrySet();
         log.info(set1.toString());
+        log.info("map.size() is : {}", map.size());
+        HashMap<Object, Object> hashMap = new HashMap<>();
+
+        hashMap.put(1,1);
+        hashMap.put(2,2);
+        hashMap.put(1,40);
+        hashMap.put(2,200);
+        Set<Map.Entry<Object, Object>> entries = hashMap.entrySet();
+        log.info("entries is : {}", entries);
+
     }
+
+    @Test
+    public void test9() {
+        RedBlackTree<Integer> tree = new RedBlackTree<>();
+
+        tree.insert(7);
+        tree.insert(3);
+        tree.insert(18);
+        tree.insert(10);
+        tree.insert(22);
+        tree.insert(8);
+        tree.insert(11);
+        tree.insert(26);
+        tree.insert(2);
+        tree.insert(6);
+        tree.insert(13);
+
+        System.out.println("中序遍历红黑树:");
+        tree.inorder();
+        tree.printTree();
+
+        tree.delete(18);
+        System.out.println("删除18后的中序遍历:");
+        tree.inorder();
+        tree.printTree();
+
+        tree.delete(11);
+        System.out.println("删除11后的中序遍历:");
+        tree.inorder();
+        tree.printTree();
+    }
+
+    @Test
+    public void test10() {
+        RedBlackTree<Integer> tree = new RedBlackTree<>();
+
+        int[] values = {7, 3, 18, 10, 22, 8, 11, 26, 2, 6, 13};
+        for (int value : values) {
+            tree.insert(value);
+            System.out.println("\n插入 " + value + " 后的树结构:");
+            tree.printTree();
+        }
+
+        System.out.println("\n中序遍历红黑树:");
+        tree.inorder();
+
+        int[] deleteValues = {18, 11, 3};
+        for (int value : deleteValues) {
+            tree.delete(value);
+            System.out.println("\n删除 " + value + " 后的树结构:");
+            tree.printTree();
+        }
+    }
+
+    @Test
+    public void test11() {
+        TreeNode treeNode = new TreeNode(5);
+        treeNode.left = new TreeNode(3);
+        treeNode.right = new TreeNode(6);
+        treeNode.left.left = new TreeNode(2);
+        treeNode.left.right = new TreeNode(4);
+        treeNode.left.left.left = new TreeNode(1);
+
+        // 查找第3小的元素
+        int k = 3;
+        int kthSmallestElement = kthSmallest(treeNode, k);
+        log.info("kthSmallestElement is : {}", kthSmallestElement);
+    }
+
+    public int kthSmallest(TreeNode root, int k) {
+        inOrderTraverse(root, k);
+        return result;
+    }
+
+    private int count=0;
+    private int result=Integer.MIN_VALUE;
+    void inOrderTraverse(TreeNode node,int k){
+        if(node==null) return;
+        inOrderTraverse(node.left,k);
+        count++;
+        if (Objects.equals(count,k)){
+            result=node.val;
+            return;
+        }
+        inOrderTraverse(node.right,k);
+    }
+
+}
+
+class TreeNode{
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode(int x) {
+        val = x;
+    }
+    TreeNode(){}
 }
