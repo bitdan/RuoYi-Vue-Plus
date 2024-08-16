@@ -39,6 +39,8 @@ spec:
       labels:
         app: halo
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: master
       containers:
         - name: halo
           image: halohub/halo:2.18

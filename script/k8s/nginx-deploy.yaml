@@ -61,6 +61,8 @@ spec:
         app: nginx-pod
       namespace: ruoyi
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: node1
       containers:
         - image: nginx:1.22.1
           name: nginx
