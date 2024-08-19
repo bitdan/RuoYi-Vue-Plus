@@ -46,4 +46,29 @@ public class BinarySearchTree {
         return result;
     }
 
+    public TreeNode getRoot() {
+        return root;
+    }
+
+    public void preOrderTraverse(TreeNode root) {
+        if (root == null) return;
+        System.out.println(root.val + " ");
+        preOrderTraverse(root.left);
+        preOrderTraverse(root.right);
+    }
+
+
+    public void inOrderTraverse(TreeNode root) {
+        if (root == null) return;
+        inOrderTraverse(root.left);
+        System.out.println(root.val + " ");
+        inOrderTraverse(root.right);
+    }
+
+    public void postOrderTraverse(TreeNode root) {
+        if (root == null) return;
+        postOrderTraverse(root.left);
+        postOrderTraverse(root.right);
+        System.out.println(root.val + " ");
+    }
 }
