@@ -219,6 +219,16 @@ public class BitMapTest {
 
         int kthSmallest = bst.kthSmallest(4);
         log.info("kthSmallestElement is : {}", kthSmallest);
+
+        System.out.println("===前序");
+        bst.preOrderTraverse(bst.getRoot());
+        System.out.println();
+        System.out.println("===中序");
+        bst.inOrderTraverse(bst.getRoot());
+        System.out.println();
+        System.out.println("===后序");
+        bst.postOrderTraverse(bst.getRoot());
+        System.out.println();
     }
 
     @Test
@@ -229,26 +239,9 @@ public class BitMapTest {
 
         Trie filter = new Trie(sensitiveWords);
         boolean result = filter.search("sb");
-        System.out.println(result); // 期待输出 true
+        System.out.println(result);
     }
 
-    @Test
-    public void test13() {
-        BinarySearchTree bst = new BinarySearchTree();
-        bst.insert(7);
-        bst.insert(3);
-        bst.insert(6);
-        bst.insert(9);
-        bst.insert(4);
-        bst.insert(1);
-        bst.insert(8);
-        System.out.println("===中序");
-        bst.inOrderTraverse(bst.getRoot());
-        System.out.println("===前序");
-        bst.preOrderTraverse(bst.getRoot());
-        System.out.println("===后序");
-        bst.postOrderTraverse(bst.getRoot());
-    }
 }
 
 
