@@ -1,4 +1,5 @@
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -236,6 +237,17 @@ public class BitMapTest {
             return;
         }
         inOrderTraverse(node.right,k);
+    }
+
+    @Test
+    public void test12() {
+        List<String> sensitiveWords = new ArrayList<>();
+        sensitiveWords.add("qw");
+        sensitiveWords.add("sb");
+
+        Trie filter = new Trie(sensitiveWords);
+        boolean result = filter.search("sb");
+        System.out.println(result); // 期待输出 true
     }
 
 }
