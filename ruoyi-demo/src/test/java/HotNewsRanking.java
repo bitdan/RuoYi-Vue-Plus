@@ -46,6 +46,13 @@ public class HotNewsRanking {
             .collect(Collectors.toList());
     }
 
+    public List<String> getTopNewsId(){
+        return hotNews.entryRangeReversed(0,TOP_NEWS_COUNT-1)
+            .stream()
+            .map(entry->entry.getValue())
+            .collect(Collectors.toList());
+    }
+
     public void removeNews(String newsId) {
         hotNews.remove(newsId);
     }
@@ -91,6 +98,8 @@ public class HotNewsRanking {
 
         List<Map.Entry<String, Double>> topNews = ranking.getTopNews();
         log.info("topNews is : {}", topNews);
+        List<String> topNewsId = ranking.getTopNewsId();
+        log.info("topNewsId is : {}", topNewsId);
         ranking.close();
     }
 }

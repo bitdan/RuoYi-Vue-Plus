@@ -1,5 +1,4 @@
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BitMapTest {
     static final int MAXIMUM_CAPACITY = 1 << 30;
+
     @Test
     public void test() {
         int nums[] = {5, 3, 7, 5, 9, 3, 8, 7};
@@ -84,7 +84,7 @@ public class BitMapTest {
 //                iterator.remove();
 //            }
 //        }
-        students.removeIf(o->o.name.equals("ab"));
+        students.removeIf(o -> o.name.equals("ab"));
         log.info("students is : {}", students);
     }
 
@@ -118,10 +118,10 @@ public class BitMapTest {
     @Test
     public void test7() {
         MyHashMap map = new MyHashMap();
-        map.put(1,1);
-        map.put(2,2);
-        map.put(1,40);
-        map.put(2,200);
+        map.put(1, 1);
+        map.put(2, 2);
+        map.put(1, 40);
+        map.put(2, 200);
 
         log.info(map.get(1).toString());
         log.info(map.get(2).toString());
@@ -129,11 +129,11 @@ public class BitMapTest {
 
     @Test
     public void test8() {
-        MyHashMap map = new MyHashMap<Integer,Integer>();
-        map.put(1,1);
-        map.put(2,2);
-        map.put(1,40);
-        map.put(2,200);
+        MyHashMap map = new MyHashMap<Integer, Integer>();
+        map.put(1, 1);
+        map.put(2, 2);
+        map.put(1, 40);
+        map.put(2, 200);
 
         log.info(map.get(1).toString());
         log.info(map.get(2).toString());
@@ -144,10 +144,10 @@ public class BitMapTest {
         log.info("map.size() is : {}", map.size());
         HashMap<Object, Object> hashMap = new HashMap<>();
 
-        hashMap.put(1,1);
-        hashMap.put(2,2);
-        hashMap.put(1,40);
-        hashMap.put(2,200);
+        hashMap.put(1, 1);
+        hashMap.put(2, 2);
+        hashMap.put(1, 40);
+        hashMap.put(2, 200);
         Set<Map.Entry<Object, Object>> entries = hashMap.entrySet();
         log.info("entries is : {}", entries);
 
@@ -208,35 +208,17 @@ public class BitMapTest {
 
     @Test
     public void test11() {
-        TreeNode treeNode = new TreeNode(5);
-        treeNode.left = new TreeNode(3);
-        treeNode.right = new TreeNode(6);
-        treeNode.left.left = new TreeNode(2);
-        treeNode.left.right = new TreeNode(4);
-        treeNode.left.left.left = new TreeNode(1);
+        BinarySearchTree bst = new BinarySearchTree();
+        bst.insert(7);
+        bst.insert(3);
+        bst.insert(6);
+        bst.insert(9);
+        bst.insert(4);
+        bst.insert(1);
+        bst.insert(8);
 
-        // 查找第3小的元素
-        int k = 3;
-        int kthSmallestElement = kthSmallest(treeNode, k);
-        log.info("kthSmallestElement is : {}", kthSmallestElement);
-    }
-
-    public int kthSmallest(TreeNode root, int k) {
-        inOrderTraverse(root, k);
-        return result;
-    }
-
-    private int count=0;
-    private int result=Integer.MIN_VALUE;
-    void inOrderTraverse(TreeNode node,int k){
-        if(node==null) return;
-        inOrderTraverse(node.left,k);
-        count++;
-        if (Objects.equals(count,k)){
-            result=node.val;
-            return;
-        }
-        inOrderTraverse(node.right,k);
+        int kthSmallest = bst.kthSmallest(4);
+        log.info("kthSmallestElement is : {}", kthSmallest);
     }
 
     @Test
@@ -249,15 +231,6 @@ public class BitMapTest {
         boolean result = filter.search("sb");
         System.out.println(result); // 期待输出 true
     }
-
 }
 
-class TreeNode{
-    int val;
-    TreeNode left;
-    TreeNode right;
-    TreeNode(int x) {
-        val = x;
-    }
-    TreeNode(){}
-}
+
