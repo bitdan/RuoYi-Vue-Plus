@@ -79,6 +79,8 @@ spec:
                 secretKeyRef:
                   name: redis-secret
                   key: password
+            - name: TZ
+              value: Asia/Shanghai
           volumeMounts:
             - name: redis-data
               mountPath: /data

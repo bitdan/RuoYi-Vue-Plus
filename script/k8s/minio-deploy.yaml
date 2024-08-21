@@ -75,6 +75,8 @@ spec:
                 secretKeyRef:
                   name: minio-secret
                   key: root-password
+            - name: TZ
+              value: Asia/Shanghai
           volumeMounts:
             - name: storage
               mountPath: "/data"

@@ -54,6 +54,9 @@ spec:
             - --spring.r2dbc.username=root
             - --spring.r2dbc.password=xxx
             - --spring.sql.init.platform=mysql
+          env:
+            - name: TZ
+              value: Asia/Shanghai
       restartPolicy: Always
       volumes:
         - name: halo-data
