@@ -16,7 +16,7 @@ spec:
         app: ruoyi-server
     spec:
       nodeSelector:
-        kubernetes.io/hostname: node1
+        node-role.kubernetes.io/worker: worker
       containers:
         - name: ruoyi-server
           image: biasoo/ruoyi-server-k8s:4.8.5

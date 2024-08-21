@@ -5,6 +5,7 @@
   "author": "LionLi",
   "license": "MIT",
   "scripts": {
+    "clean": "npx rimraf dist",
     "dev": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
     "preview": "node build/index.js --preview",

@@ -40,7 +40,7 @@ spec:
         app: halo
     spec:
       nodeSelector:
-        kubernetes.io/hostname: master
+        node-role.kubernetes.io/master: ""
       containers:
         - name: halo
           image: halohub/halo:2.18

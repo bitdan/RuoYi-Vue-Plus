@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="ruoyi-ui" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+        <deployment type="dockerfile">
+            <settings>
+                <!-- 设置镜像标签，修改为合适的名称和版本 -->
+                <option name="imageTag" value="biasoo/ruoyi-ui:4.8.5" />
+                <!-- 设置为仅构建镜像，不部署 -->
+                <option name="buildOnly" value="true" />
+                <!-- 指定 Dockerfile 的路径 -->
+                <option name="sourceFilePath" value="ruoyi-ui/Dockerfile" />
+            </settings>
+        </deployment>
+        <method v="2" />
+    </configuration>
+</component>

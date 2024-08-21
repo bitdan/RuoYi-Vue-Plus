@@ -7,13 +7,14 @@ import java.util.List;
  */
 public class Trie {
     private TrieNode root;
+
     public Trie() {
         root = new TrieNode();
     }
 
     public void insert(String word) {
         TrieNode node = root;
-        for(char c : word.toCharArray()) {
+        for (char c : word.toCharArray()) {
             node.getChildren().putIfAbsent(c, new TrieNode());
             node = node.getChildren().get(c);
         }
@@ -21,12 +22,12 @@ public class Trie {
     }
 
     public boolean search(String text) {
-        for(int i=0; i<text.length(); i++) {
+        for (int i = 0; i < text.length(); i++) {
             TrieNode node = root;
-            int j=i;
-            while(j<text.length()&&node!=null) {
-                node=node.getChildren().get(text.charAt(j));
-                if(node!=null&&node.isEndOfWord()) {
+            int j = i;
+            while (j < text.length() && node != null) {
+                node = node.getChildren().get(text.charAt(j));
+                if (node != null && node.isEndOfWord()) {
                     return true;
                 }
                 j++;
@@ -38,7 +39,7 @@ public class Trie {
     public Trie(List<String> sensitiveWords) {
         this();
         for (String word : sensitiveWords) {
-           insert(word);
+            insert(word);
         }
     }
 }
