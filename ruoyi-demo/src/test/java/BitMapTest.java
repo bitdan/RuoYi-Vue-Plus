@@ -242,6 +242,37 @@ public class BitMapTest {
         System.out.println(result);
     }
 
+    @Test
+    public void test13() {
+        String str = "aaabbbdcdsasfasfasfbbghjtttwwr";
+        int maxNum = getMaxNum(str);
+        System.out.println(maxNum);
+    }
+
+    public int getMaxNum(String str) {
+        if (str == null || str.length() == 0) {
+            return 0;
+        }
+        HashMap<String, Integer> stringIntegerHashMap = new HashMap<>();
+        for (int i = 0; i < str.length(); i++) {
+            String c = String.valueOf(str.charAt(i));
+            if (!stringIntegerHashMap.containsKey(c)) {
+                stringIntegerHashMap.put(c, 1);
+            } else {
+                Integer val = stringIntegerHashMap.get(c);
+                val++;
+                stringIntegerHashMap.put(c, val);
+            }
+        }
+
+        Set<Map.Entry<String, Integer>> entries = stringIntegerHashMap.entrySet();
+        log.info("entries is : {}", entries);
+        int maxNum = 0;
+        for (Map.Entry<String, Integer> entry : entries) {
+            maxNum = Math.max(maxNum, entry.getValue());
+        }
+        return maxNum;
+    }
 }
 
 

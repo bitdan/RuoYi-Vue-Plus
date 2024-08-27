@@ -1,14 +1,17 @@
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.redisson.Redisson;
-import org.redisson.api.RScoredSortedSet;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.*;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.config.Config;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -46,10 +49,10 @@ public class HotNewsRanking {
             .collect(Collectors.toList());
     }
 
-    public List<String> getTopNewsId(){
-        return hotNews.entryRangeReversed(0,TOP_NEWS_COUNT-1)
+    public List<String> getTopNewsId() {
+        return hotNews.entryRangeReversed(0, TOP_NEWS_COUNT - 1)
             .stream()
-            .map(entry->entry.getValue())
+            .map(entry -> entry.getValue())
             .collect(Collectors.toList());
     }
 
@@ -64,16 +67,17 @@ public class HotNewsRanking {
     public long getTotalNewsCount() {
         return hotNews.size();
     }
+
     public Double getNewsScore(String newsId) {
         return hotNews.getScore(newsId);
     }
 
-    public  void close(){
+    public void close() {
         redisson.shutdown();
     }
 
     @Test
-    public void test(){
+    public void test() {
         HotNewsRanking ranking = new HotNewsRanking();
         ranking.clearRanking();
         for (int i = 0; i < 100; i++) {
@@ -102,4 +106,72 @@ public class HotNewsRanking {
         log.info("topNewsId is : {}", topNewsId);
         ranking.close();
     }
+
+    @Test
+    public void test1() throws InterruptedException {
+        addTaskToDelayQueue("234");
+        for (int i = 0; i < 2; i++) {
+            String order = getOrderFromDelayQueue();
+            log.info("order is : {}", order);
+        }
+
+    }
+
+
+    public void addTaskToDelayQueue(String orderId) {
+
+        RBlockingDeque<String> blockingDeque = redisson.getBlockingDeque("orderQueue");
+        RDelayedQueue<String> delayedQueue = redisson.getDelayedQueue(blockingDeque);
+        log.info("{}, add task ", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        delayedQueue.offer(orderId, 3, TimeUnit.SECONDS);
+        delayedQueue.offer(orderId, 6, TimeUnit.SECONDS);
+        delayedQueue.offer(orderId, 9, TimeUnit.SECONDS);
+    }
+
+    public String getOrderFromDelayQueue() throws InterruptedException {
+        RBlockingDeque<String> blockingDeque = redisson.getBlockingDeque("orderQueue");
+        RDelayedQueue<String> delayedQueue = redisson.getDelayedQueue(blockingDeque);
+        String orderId = blockingDeque.take();
+        return orderId;
+    }
+
+    public RRateLimiter createLimiter() {
+        RRateLimiter rateLimiter = redisson.getRateLimiter("myRateLimiter3");
+        // 初始化：PER_CLIENT 单实例执行，OVERALL 全实例执行
+        // 最大流速 = 每10秒钟产生3个令牌
+        rateLimiter.trySetRate(RateType.OVERALL, 3, 10, RateIntervalUnit.SECONDS);
+        return rateLimiter;
+    }
+
+
+    @Test
+    public void test2() throws InterruptedException {
+        RRateLimiter rateLimiter = createLimiter();
+        int allThreadNum = 20;
+        CountDownLatch latch = new CountDownLatch(allThreadNum);
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < allThreadNum; i++) {
+            int finalI = i;
+            new Thread(() -> {
+                if (finalI % 3 == 0) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                boolean pass = rateLimiter.tryAcquire();
+                if (pass) {
+                    log.info("get ");
+                } else {
+                    log.info("no");
+                }
+                latch.countDown();
+            }).start();
+        }
+        latch.await();
+        System.out.println("Elapsed " + (System.currentTimeMillis() - startTime));
+
+    }
+
 }
