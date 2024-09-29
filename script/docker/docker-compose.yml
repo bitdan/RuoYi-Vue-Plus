@@ -26,6 +26,7 @@ services:
       --explicit_defaults_for_timestamp=true
       --lower_case_table_names=1
     privileged: true
+    restart: unless-stopped
     network_mode: "host"
 
   nginx-web:
@@ -47,6 +48,7 @@ services:
       # 日志目录
       - /docker/nginx/log:/var/log/nginx
     privileged: true
+    restart: unless-stopped
     network_mode: "host"
 
   redis:
@@ -64,6 +66,7 @@ services:
       - /docker/redis/data/:/redis/data/:rw
     command: "redis-server /redis/config/redis.conf"
     privileged: true
+    restart: unless-stopped
     network_mode: "host"
 
   minio:
@@ -97,6 +100,7 @@ services:
       - /docker/minio/config:/root/.minio/
     command: server --address ':9000' --console-address ':9001' /data  # 指定容器中的目录 /data
     privileged: true
+    restart: unless-stopped
     network_mode: "host"
 
   ruoyi-server1:
@@ -114,6 +118,7 @@ services:
       # skywalking 探针
 #      - /docker/skywalking/agent/:/ruoyi/skywalking/agent
     privileged: true
+    restart: unless-stopped
     network_mode: "host"
 
   ruoyi-server2:
@@ -129,6 +134,7 @@ services:
       # skywalking 探针
 #      - /docker/skywalking/agent/:/ruoyi/skywalking/agent
     privileged: true
+    restart: unless-stopped
     network_mode: "host"
 
   ruoyi-monitor-admin:
@@ -141,6 +147,7 @@ services:
       # 配置文件
       - /docker/monitor/logs/:/ruoyi/monitor/logs
     privileged: true
+    restart: unless-stopped
     network_mode: "host"
 
   ruoyi-xxl-job-admin:
@@ -153,4 +160,5 @@ services:
       # 配置文件
       - /docker/xxljob/logs/:/ruoyi/xxljob/logs
     privileged: true
+    restart: unless-stopped
     network_mode: "host"

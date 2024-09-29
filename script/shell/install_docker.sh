@@ -10,7 +10,7 @@ sudo yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/ce
 sudo yum makecache fast
 
 # 4. 安装Docker
-sudo yum install -y docker-ce docker-ce-cli containerd.io
+sudo yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 # 5. 启动Docker服务
 sudo systemctl start docker
