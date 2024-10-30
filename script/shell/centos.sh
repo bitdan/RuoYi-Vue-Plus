@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 备份旧的 yum 源配置文件
-copy /etc/yum.repos.d/CentOS-Base.repo  /etc/yum.repos.d/CentOS-Base.repo.vak
+copy /etc/yum.repos.d/CentOS-Base.repo  /etc/yum.repos.d/CentOS-Base.repo.bak
 
 # 下载阿里云 CentOS 7 yum 源配置文件
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
