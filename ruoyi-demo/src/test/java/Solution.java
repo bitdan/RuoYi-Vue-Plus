@@ -1,3 +1,8 @@
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -39,5 +44,23 @@ public class Solution {
             day++;
         }
         return result;
+    }
+
+    @Test
+    public void test(){
+        // 定义日期时间格式
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // 解析指定的日期时间字符串
+        LocalDateTime startTime = LocalDateTime.parse("2024-10-31 15:03:00", formatter);
+
+        // 获取当前日期时间
+        LocalDateTime now = LocalDateTime.parse("2024-10-31 15:03:59", formatter);
+
+        // 计算两个时间点之间的分钟差
+        long minutesBetween = ChronoUnit.MINUTES.between(startTime, now);
+
+        // 打印结果
+        System.out.println("Minutes between: " + minutesBetween);
     }
 }
