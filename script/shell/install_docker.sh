@@ -17,7 +17,13 @@ else
     exit 1
 fi
 
-# 安装 Docker 的函数定义 - CentOS/RHEL
+# 如果是 OpenCloudOS，设置为基于 RHEL 的系统
+if [[ "$OS" == "opencloudos" ]]; then
+    echo "检测到 OpenCloudOS 系统，作为 RHEL 系列处理"
+    OS="rhel"
+fi
+
+# 安装 Docker 的函数定义 - CentOS/RHEL/OpenCloudOS
 install_docker_redhat() {
     echo "检测到 ${OS} 系统，开始安装 Docker..."
     # 安装必要的工具
@@ -74,7 +80,6 @@ configure_docker() {
 {
     "registry-mirrors": [
         "https://docker.1panel.live"
-
     ],
     "log-driver": "json-file",
     "log-opts": {
