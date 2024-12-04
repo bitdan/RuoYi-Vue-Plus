@@ -101,8 +101,7 @@ yum install -y kubelet-1.23.0-0 kubectl-1.23.0-0 kubeadm-1.23.0-0
 
 systemctl enable kubelet
 systemctl start kubelet
-systemctl enable docker
-systemctl start docker
+echo "kubelet install ok"
 
 # 查找 10-kubeadm.conf 文件
 KUBEADM_CONF=$(find / -name 10-kubeadm.conf 2>/dev/null)
@@ -118,11 +117,14 @@ PUBLIC_IP=${HOST_IPS[$HOSTNAME]}
 # 备份原始配置文件
 cp "$KUBEADM_CONF" "${KUBEADM_CONF}.bak"
 
-# 修改配置文件
-sed -i '/ExecStart=/s/$/ --node-ip='"$PUBLIC_IP"'/' "$KUBEADM_CONF"
+# 倒序读取并修改最后一个 ExecStart= 行
+tac "$KUBEADM_CONF" | sed '/ExecStart=/s/$/ --node-ip='"$PUBLIC_IP"'/' | tac > "$KUBEADM_CONF"
+
 
 # 重新加载 systemd 配置
 systemctl daemon-reload
+
+echo "10-kubeadm.conf modify ok"
 
 # Master 节点特殊处理
 if [ "$HOSTNAME" == "master" ]; then
