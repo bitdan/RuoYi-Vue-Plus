@@ -85,17 +85,19 @@ systemctl restart network
 ip addr | grep ${NEW_IP}
 
 # 添加 Kubernetes 官方仓库
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
 enabled=1
-gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+gpgcheck=0
+repo_gpgcheck=0
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 
+
 # 安装 kubernetes 组件
-yum install -y kubelet-1.23.0-0 kubectl-1.23.0-0 kubeadm-1.23.0-0 docker-ce
+yum install -y kubelet-1.23.0-0 kubectl-1.23.0-0 kubeadm-1.23.0-0
 
 systemctl enable kubelet
 systemctl start kubelet
