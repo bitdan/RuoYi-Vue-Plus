@@ -33,20 +33,6 @@ case $choice in
         ;;
 esac
 
-# 设置主机名
-hostnamectl set-hostname $HOSTNAME
-
-# 动态生成sed匹配模式
-HOSTS_PATTERN=$(IFS=\|; echo "${!HOST_IPS[*]}")
-
-# 删除原有的主机映射
-sed -i "/$HOSTS_PATTERN/d" /etc/hosts
-
-# 遍历并写入所有主机信息
-for hostname in "${!HOST_IPS[@]}"; do
-    echo "${HOST_IPS[$hostname]} $hostname" >> /etc/hosts
-done
-
 # 关闭 SELinux
 echo "关闭 SELinux"
 setenforce 0
