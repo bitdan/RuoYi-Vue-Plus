@@ -328,6 +328,12 @@
                 <version>${ruoyi-vue-plus.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-game</artifactId>
+                <version>${ruoyi-vue-plus.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -342,6 +348,8 @@
         <module>ruoyi-extend</module>
         <module>ruoyi-oss</module>
         <module>ruoyi-sms</module>
+        <module>ruoyi-game</module>
+
     </modules>
     <packaging>pom</packaging>
 
