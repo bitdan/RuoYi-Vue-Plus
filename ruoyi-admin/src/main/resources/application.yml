@@ -136,6 +136,9 @@ security:
     # actuator 监控配置
     - /actuator
     - /actuator/**
+    # websocket
+    - /resource/websocket
+    - /resource/websocket/**
 
 # MyBatisPlus配置
 # https://baomidou.com/config/
@@ -266,3 +269,12 @@ management:
       show-details: ALWAYS
     logfile:
       external-file: ./logs/sys-console.log
+
+--- # websocket
+websocket:
+  # 如果关闭 需要和前端开关一起关闭
+  enabled: true
+  # 路径
+  path: /resource/websocket
+  # 设置访问源地址
+  allowedOrigins: '*'
