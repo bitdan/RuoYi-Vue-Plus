@@ -30,7 +30,13 @@ import lombok.NoArgsConstructor;
 public class LoginHelper {
 
     public static final String LOGIN_USER_KEY = "loginUser";
+    public static final String TENANT_KEY = "tenantId";
     public static final String USER_KEY = "userId";
+    public static final String USER_NAME_KEY = "userName";
+    public static final String DEPT_KEY = "deptId";
+    public static final String DEPT_NAME_KEY = "deptName";
+    public static final String DEPT_CATEGORY_KEY = "deptCategory";
+    public static final String CLIENT_KEY = "clientid";
 
     /**
      * 登录系统
