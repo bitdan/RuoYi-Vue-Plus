@@ -6,6 +6,7 @@ import com.ruoyi.common.helper.LoginHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
@@ -19,6 +20,7 @@ import static com.ruoyi.common.websocket.constant.WebSocketConstants.LOGIN_USER_
  * @author zendwang
  */
 @Slf4j
+@Component
 public class PlusWebSocketInterceptor implements HandshakeInterceptor {
 
     /**

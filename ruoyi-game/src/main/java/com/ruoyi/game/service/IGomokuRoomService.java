@@ -2,11 +2,13 @@ package com.ruoyi.game.service;
 
 import com.ruoyi.common.core.domain.PageQuery;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.game.domain.GomokuRoom;
 import com.ruoyi.game.domain.bo.GomokuRoomBo;
 import com.ruoyi.game.domain.vo.GomokuRoomVo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 五子棋房间Service接口
@@ -45,4 +47,17 @@ public interface IGomokuRoomService {
      * 校验并批量删除五子棋房间信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    // 新增的游戏相关方法
+    GomokuRoom getByRoomId(String roomId);
+
+    boolean isValidMove(String roomId, Long userId, Map<String, Object> moveData);
+
+    String createRoom(Long hostId);
+
+    boolean joinRoom(String roomId, Long guestId);
+
+    boolean leaveRoom(String roomId, Long userId);
+
+    boolean makeMove(String roomId, Long userId, int x, int y);
 }

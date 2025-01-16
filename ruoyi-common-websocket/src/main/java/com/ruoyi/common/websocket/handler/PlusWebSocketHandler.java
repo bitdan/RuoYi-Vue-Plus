@@ -48,6 +48,12 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         // 从WebSocket会话中获取登录用户信息
         LoginUser loginUser = (LoginUser) session.getAttributes().get(LOGIN_USER_KEY);
+        
+        // 打印接收到的消息详情
+        log.info("[websocket] 收到消息 - 用户ID: {}, 用户名: {}, 消息内容: {}", 
+            loginUser.getUserId(), 
+            loginUser.getUsername(), 
+            message.getPayload());
 
         // 创建WebSocket消息DTO对象
         WebSocketMessageDto webSocketMessageDto = new WebSocketMessageDto();
@@ -55,7 +61,12 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
         sessionKeys.add(loginUser.getUserId());
         webSocketMessageDto.setSessionKeys(sessionKeys);
         webSocketMessageDto.setMessage(message.getPayload());
+        
+        // 发送消息并打印发送详情
         WebSocketUtils.publishMessage(webSocketMessageDto);
+        log.info("[websocket] 消息已转发 - 发送者ID: {}, 接收者IDs: {}", 
+            loginUser.getUserId(), 
+            sessionKeys);
     }
 
     /**

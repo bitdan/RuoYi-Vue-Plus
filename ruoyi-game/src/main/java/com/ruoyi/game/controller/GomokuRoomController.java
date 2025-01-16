@@ -10,6 +10,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.validate.AddGroup;
 import com.ruoyi.common.core.validate.EditGroup;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.helper.LoginHelper;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.game.domain.bo.GomokuRoomBo;
 import com.ruoyi.game.domain.vo.GomokuRoomVo;
@@ -23,6 +24,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 五子棋房间
@@ -103,5 +105,31 @@ public class GomokuRoomController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(iGomokuRoomService.deleteWithValidByIds(Arrays.asList(ids), true));
+    }
+
+    // 游戏相关接口
+    @PostMapping("/create")
+    public R<String> createRoom() {
+        Long userId = LoginHelper.getUserId();
+        String roomId = iGomokuRoomService.createRoom(userId);
+        return R.ok("操作成功", roomId);
+    }
+
+    @PostMapping("/join/{roomId}")
+    public R<Void> joinRoom(@PathVariable String roomId) {
+        Long userId = LoginHelper.getUserId();
+        return toAjax(iGomokuRoomService.joinRoom(roomId, userId));
+    }
+
+    @PostMapping("/leave/{roomId}")
+    public R<Void> leaveRoom(@PathVariable String roomId) {
+        Long userId = LoginHelper.getUserId();
+        return toAjax(iGomokuRoomService.leaveRoom(roomId, userId));
+    }
+
+    @PostMapping("/move/{roomId}")
+    public R<Void> makeMove(@PathVariable String roomId, @RequestBody Map<String, Integer> moveData) {
+        Long userId = LoginHelper.getUserId();
+        return toAjax(iGomokuRoomService.makeMove(roomId, userId, moveData.get("x"), moveData.get("y")));
     }
 }
