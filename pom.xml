@@ -334,6 +334,13 @@
                 <version>${ruoyi-vue-plus.version}</version>
             </dependency>
 
+            <!-- 项目模块依赖 -->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-common-websocket</artifactId>
+                <version>${ruoyi-vue-plus.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -349,7 +356,7 @@
         <module>ruoyi-oss</module>
         <module>ruoyi-sms</module>
         <module>ruoyi-game</module>
-
+        <module>ruoyi-common-websocket</module>
     </modules>
     <packaging>pom</packaging>
 
