@@ -15,6 +15,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +41,32 @@ public class GomokuWebSocketHandler extends TextWebSocketHandler {
             log.info("[connect] invalid token received. sessionId: {}", session.getId());
             return;
         }
+
+        // 从URI中获取房间ID
+        String roomId = getRoomIdFromUri(session.getUri());
+        if (roomId == null) {
+            session.close(CloseStatus.BAD_DATA);
+            log.info("[connect] invalid room ID. sessionId: {}", session.getId());
+            return;
+        }
+
+        // 检查房间是否存在
+        GomokuRoom room = gomokuRoomService.getByRoomId(roomId);
+        if (room == null) {
+            session.close(CloseStatus.BAD_DATA);
+            log.info("[connect] room not found. roomId: {}, sessionId: {}", roomId, session.getId());
+            return;
+        }
+
         WebSocketSessionHolder.addSession(loginUser.getUserId(), session);
-        log.info("[connect] sessionId: {}, userId: {}", session.getId(), loginUser.getUserId());
+        log.info("[connect] sessionId: {}, userId: {}, roomId: {}", session.getId(), loginUser.getUserId(), roomId);
+    }
+
+    private String getRoomIdFromUri(URI uri) {
+        if (uri == null) return null;
+        String path = uri.getPath();
+        String[] segments = path.split("/");
+        return segments.length > 0 ? segments[segments.length - 1] : null;
     }
 
     @Override

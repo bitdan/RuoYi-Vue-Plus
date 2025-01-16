@@ -22,7 +22,7 @@ public class GomokuWebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(gomokuWebSocketHandler, "/ws/gomoku")
+        registry.addHandler(gomokuWebSocketHandler, "/ws/gomoku/{roomId}")
             .addInterceptors(webSocketInterceptor)
             .setAllowedOrigins("*");
     }
