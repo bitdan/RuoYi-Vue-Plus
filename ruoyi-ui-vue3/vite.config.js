@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite'
+import {defineConfig, loadEnv} from 'vite'
 import path from 'path'
 import createVitePlugins from './vite/plugins'
 
@@ -24,7 +24,7 @@ export default defineConfig(({ mode, command }) => {
     },
     // vite 相关配置
     server: {
-      port: 80,
+      port: 90,
       host: true,
       open: true,
       proxy: {

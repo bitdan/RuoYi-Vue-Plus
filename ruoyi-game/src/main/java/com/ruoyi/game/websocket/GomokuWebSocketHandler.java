@@ -30,7 +30,7 @@ public class GomokuWebSocketHandler extends TextWebSocketHandler {
     private final ObjectMapper objectMapper;
 
     // 房间ID -> WebSocketSession映射
-    private final Map<String, WebSocketSession> roomSessions = new ConcurrentHashMap<>();
+    private final Map<String, Map<Long, WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
@@ -52,23 +52,27 @@ public class GomokuWebSocketHandler extends TextWebSocketHandler {
         // 解析消息
         GomokuMessage gomokuMessage = objectMapper.readValue(payload, GomokuMessage.class);
         String roomId = gomokuMessage.getRoomId();
+        Map<String, Object> data = gomokuMessage.getData();
 
         switch (gomokuMessage.getType()) {
             case "JOIN":
-                handleJoinRoom(session, loginUser, roomId);
+                handleJoin(session, loginUser, roomId);
                 break;
             case "MOVE":
-                handleMove(session, loginUser, roomId, gomokuMessage.getData());
+                handleMove(session, loginUser, roomId, data);
                 break;
             case "LEAVE":
-                handleLeaveRoom(session, loginUser, roomId);
+                handleLeave(session, loginUser, roomId);
+                break;
+            case "RESTART":
+                handleRestart(session, loginUser, roomId);
                 break;
             default:
                 log.warn("Unknown message type: {}", gomokuMessage.getType());
         }
     }
 
-    private void handleJoinRoom(WebSocketSession session, LoginUser loginUser, String roomId) throws IOException {
+    private void handleJoin(WebSocketSession session, LoginUser loginUser, String roomId) throws IOException {
         GomokuRoom room = gomokuRoomService.getByRoomId(roomId);
         if (room == null) {
             sendError(session, "Room not found");
@@ -76,7 +80,8 @@ public class GomokuWebSocketHandler extends TextWebSocketHandler {
         }
 
         // 将session加入房间
-        roomSessions.put(roomId, session);
+        roomSessions.computeIfAbsent(roomId, k -> new ConcurrentHashMap<>())
+            .put(loginUser.getUserId(), session);
 
         // 通知房间内其他玩家
         Map<String, Object> data = new HashMap<>();
@@ -86,22 +91,75 @@ public class GomokuWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void handleMove(WebSocketSession session, LoginUser loginUser, String roomId, Map<String, Object> data) throws IOException {
-        // 验证移动是否合法
-        if (!gomokuRoomService.isValidMove(roomId, loginUser.getUserId(), data)) {
-            sendError(session, "Invalid move");
+        GomokuRoom room = gomokuRoomService.getByRoomId(roomId);
+        if (room == null) {
+            sendError(session, "Room not found");
             return;
+        }
+
+        // 验证是否轮到该玩家
+        String currentPlayer = room.getCurrentPlayer();
+        if (!loginUser.getUserId().equals(room.getPlayerIdByColor(currentPlayer))) {
+            sendError(session, "Not your turn");
+            return;
+        }
+
+        // 验证落子位置是否合法
+        Integer x = (Integer) data.get("x");
+        Integer y = (Integer) data.get("y");
+        if (x == null || y == null || x < 0 || x >= 15 || y < 0 || y >= 15) {
+            sendError(session, "Invalid move position");
+            return;
+        }
+
+        // 验证该位置是否已有棋子
+        if (room.hasChess(x, y)) {
+            sendError(session, "Position already occupied");
+            return;
+        }
+
+        // 更新棋盘状态
+        room.makeMove(x, y);
+        
+        // 检查是否获胜
+        boolean isWin = room.checkWin(x, y);
+        if (isWin) {
+            data.put("winner", currentPlayer);
         }
 
         // 广播移动信息给房间内所有玩家
         notifyRoomPlayers(roomId, new GomokuMessage("MOVE", roomId, data));
     }
 
-    private void handleLeaveRoom(WebSocketSession session, LoginUser loginUser, String roomId) throws IOException {
-        roomSessions.remove(roomId);
+    private void handleLeave(WebSocketSession session, LoginUser loginUser, String roomId) throws IOException {
+        // 从房间移除session
+        Map<Long, WebSocketSession> sessions = roomSessions.get(roomId);
+        if (sessions != null) {
+            sessions.remove(loginUser.getUserId());
+            if (sessions.isEmpty()) {
+                roomSessions.remove(roomId);
+            }
+        }
+
+        // 通知其他玩家
         Map<String, Object> data = new HashMap<>();
         data.put("userId", loginUser.getUserId());
         data.put("username", loginUser.getUsername());
         notifyRoomPlayers(roomId, new GomokuMessage("LEAVE", roomId, data));
+    }
+
+    private void handleRestart(WebSocketSession session, LoginUser loginUser, String roomId) throws IOException {
+        GomokuRoom room = gomokuRoomService.getByRoomId(roomId);
+        if (room == null) {
+            sendError(session, "Room not found");
+            return;
+        }
+
+        // 重置房间状态
+        room.restart();
+
+        // 通知所有玩家
+        notifyRoomPlayers(roomId, new GomokuMessage("RESTART", roomId, new HashMap<>()));
     }
 
     private void sendError(WebSocketSession session, String message) throws IOException {
@@ -113,9 +171,14 @@ public class GomokuWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void notifyRoomPlayers(String roomId, GomokuMessage message) throws IOException {
-        WebSocketSession session = roomSessions.get(roomId);
-        if (session != null && session.isOpen()) {
-            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
+        Map<Long, WebSocketSession> sessions = roomSessions.get(roomId);
+        if (sessions != null) {
+            String messageStr = objectMapper.writeValueAsString(message);
+            for (WebSocketSession session : sessions.values()) {
+                if (session.isOpen()) {
+                    session.sendMessage(new TextMessage(messageStr));
+                }
+            }
         }
     }
 
@@ -126,6 +189,12 @@ public class GomokuWebSocketHandler extends TextWebSocketHandler {
             log.info("[disconnect] invalid token received. sessionId: {}", session.getId());
             return;
         }
+
+        // 清理房间session
+        for (Map<Long, WebSocketSession> sessions : roomSessions.values()) {
+            sessions.remove(loginUser.getUserId());
+        }
+
         WebSocketSessionHolder.removeSession(loginUser.getUserId());
         log.info("[disconnect] sessionId: {}, userId: {}", session.getId(), loginUser.getUserId());
     }
